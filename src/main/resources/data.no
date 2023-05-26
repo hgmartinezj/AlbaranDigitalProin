@@ -1,0 +1,1 @@
+INSERT INTO TALBARAN(numeroalbaran, centro, codigoPlanta, serie, albaranid) VALUES ('numeroalbaran', 'centro', 'codigoPlanta', 'serie', 'albaranid');
