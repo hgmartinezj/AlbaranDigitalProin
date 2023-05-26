@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import com.proin.albaran.service.AlbaranService;
 import com.proin.conex.modelos.transporte.TAlbaran;
 import com.proin.conex.modelos.transporte.TConsumo;
 import com.proin.conex.modelos.transporte.TIncidenciaAlbaran;
@@ -22,7 +23,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class AlbaranController {
 	
-	//private final AlbaranService albaranService;
+	private final AlbaranService albaranService;
 	
 	@GetMapping("/")
 	public String inicio(Model model) {
