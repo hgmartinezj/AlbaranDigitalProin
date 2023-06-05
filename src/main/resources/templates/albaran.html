@@ -6,6 +6,14 @@
 
     <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
     <link th:rel="stylesheet" th:href="@{/assets/jquery-steps/jquery.steps.css} "/>
+    
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+    <script th:src="@{assets/jquery-steps/jquery.steps.min.js}"></script>
+    <script th:src="@{assets/jquery-validate/jquery.validate.min.js}"></script>
+    <!-- <script th:src="@{/webjars/npm/jsignature.min.js}"></script>
+    <script type="text/javascript" th:src="@{/webjars/npm/flashcanvas.js}"></script> -->
 </head>
 <body>
 
@@ -48,6 +56,8 @@
                 <fieldset th:insert="fragments/hormigon::hormigon"></fieldset>
                 <h3>Meteorología</h3>
                 <fieldset th:insert="fragments/meteorologia::meteorologia"></fieldset>
+                <h3>Meteorología</h3>
+                <fieldset th:insert="fragments/firma::firma"></fieldset>
 
                 <!-- <h3>Warning</h3>
                 <fieldset>
@@ -66,11 +76,6 @@
 </div>
 
 
-<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
-<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
-<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
-<script th:src="@{assets/jquery-steps/jquery.steps.min.js}"></script>
-<script th:src="@{assets/jquery-validate/jquery.validate.min.js}"></script>
 
 <script>
     var form = $("#example-advanced-form").show();
