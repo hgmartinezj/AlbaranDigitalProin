@@ -26,4 +26,5 @@ public class AlbaranDto {
 	private ClienteDto cliente;
 	private TransporteDto transporte;
 	private MeteorologiaDto meteorologia;
+	private HormigonDto hormigon;
 }

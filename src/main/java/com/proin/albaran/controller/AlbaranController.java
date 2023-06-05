@@ -5,6 +5,9 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.jeasy.random.api.Randomizer;
+import org.jeasy.random.randomizers.RegularExpressionRandomizer;
+import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 import org.springframework.stereotype.Controller;
@@ -15,9 +18,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import com.proin.albaran.dto.AlbaranDto;
 import com.proin.albaran.dto.CamionDto;
 import com.proin.albaran.dto.ClienteDto;
+import com.proin.albaran.dto.HormigonDto;
 import com.proin.albaran.dto.MeteorologiaDto;
 import com.proin.albaran.dto.RemolqueDto;
 import com.proin.albaran.dto.TransporteDto;
+import com.proin.albaran.util.EasyRandomUtils;
 import com.proin.conex.modelos.transporte.TAlbaran;
 import com.proin.conex.modelos.transporte.TConsumo;
 import com.proin.conex.modelos.transporte.TIncidenciaAlbaran;
@@ -31,14 +36,14 @@ import lombok.AllArgsConstructor;
 @Controller
 @AllArgsConstructor
 public class AlbaranController implements BaseController<TAlbaran,AlbaranDto> {
-	
 	// private final AlbaranService albaranService;
-
-	private final ModelMapper modelMapper;
 	
+	private final ModelMapper modelMapper;
 	@GetMapping("/")
 	public String inicio(Model model) {
-		model.addAttribute("albaran", convertToDto(obtenerAlbaran()));
+		TAlbaran entity = obtenerAlbaran();
+		AlbaranDto dto = convertToDto(entity);
+		model.addAttribute("albaran", dto);
 		return "albaran";
 	}
 
@@ -48,7 +53,8 @@ public class AlbaranController implements BaseController<TAlbaran,AlbaranDto> {
     }
 	
 	private TAlbaran obtenerAlbaran() {
-		TAlbaran albaran = new TAlbaran();
+
+		TAlbaran albaran = EASY_RANDOM.nextObject(TAlbaran.class);
 		albaran.setAlbaranid(1l);
 		albaran.setCantidadARecuperar(new TMedida());
 		albaran.setConsumos(obtenerConsumos());
@@ -56,6 +62,21 @@ public class AlbaranController implements BaseController<TAlbaran,AlbaranDto> {
 		albaran.setFechaAlbaran(new Date());
 		albaran.setIncidencias(obtenerIncidencias());
 		albaran.setLineasAlbaran(obtenerLineasAlbaran(albaran));
+
+		albaran.setCliente(EasyRandomUtils.nombreCompletoGenerator().getRandomValue());
+		albaran.setId(23456789L);
+		albaran.setCifTransportista(EasyRandomUtils.cifGenerator().getRandomValue());
+		// albaran.setMatriculaCamion(EasyRandomUtils.matriculaGenerator().getRandomValue());
+		// albaran.setMatricularemolque(EasyRandomUtils.matriculaGenerator().getRandomValue());
+		albaran.setCodigoEmpresa(1);
+		albaran.setCifTransportista(EasyRandomUtils.cifGenerator().getRandomValue());
+		albaran.setClienteEsCargadorContractual(true);
+		albaran.setNumeroalbaran(EasyRandomUtils.numeroIsbnGenerator().getRandomValue());
+		albaran.setFechaAlbaran(new Date());
+		albaran.setPlantasChanged(EasyRandomUtils.stringGenerator(5).getRandomValue());
+		albaran.setClienteEsCargadorContractual(true);
+		albaran.setObra(EasyRandomUtils.stringGenerator(4).getRandomValue());
+
 		return albaran;
 	}
 
@@ -98,7 +119,15 @@ public class AlbaranController implements BaseController<TAlbaran,AlbaranDto> {
 
 	@Override
 	public AlbaranDto convertToDto(TAlbaran entity) {
-		return modelMapper.map(entity, AlbaranDto.class);
+		AlbaranDto dto =  modelMapper.map(entity, AlbaranDto.class);
+		dto.setCliente(modelMapper.map(entity, ClienteDto.class));
+		dto.setTransporte(modelMapper.map(entity, TransporteDto.class));
+		dto.getTransporte().setCamion(modelMapper.map(entity, CamionDto.class));
+		dto.getTransporte().setRemolque(modelMapper.map(entity, RemolqueDto.class));
+		dto.setMeteorologia(modelMapper.map(entity, MeteorologiaDto.class));
+		dto.setHormigon(modelMapper.map(entity, HormigonDto.class));
+		dto.setHormigon(EASY_RANDOM.nextObject(HormigonDto.class));
+		return dto;
 	}
 
 	@Override
@@ -109,25 +138,30 @@ public class AlbaranController implements BaseController<TAlbaran,AlbaranDto> {
 	@Override
 	public void configMappingDto() {
 
-		modelMapper.createTypeMap(TAlbaran.class, ClienteDto.class).addMappings(mapper -> {
+		TypeMap<TAlbaran, ClienteDto> propertyMapperCliente = modelMapper.createTypeMap(TAlbaran.class, ClienteDto.class);
+		propertyMapperCliente.addMappings(mapper -> {
 			mapper.map(TAlbaran::getCliente, ClienteDto::setNombre);
 			mapper.map(TAlbaran::getId, ClienteDto::setId);
 			mapper.map(TAlbaran::getCifTransportista, ClienteDto::setCif);
 		});
 
-		modelMapper.createTypeMap(TAlbaran.class, CamionDto.class).addMappings(mapper -> {
+		TypeMap<TAlbaran, CamionDto> propertyMapperCamion = modelMapper.createTypeMap(TAlbaran.class, CamionDto.class);
+		propertyMapperCamion.addMappings(mapper -> {
 			mapper.map(TAlbaran::getMatriculaCamion, CamionDto::setMatricula);
 		});
-		modelMapper.createTypeMap(TAlbaran.class, RemolqueDto.class).addMappings(mapper -> {
+		
+		TypeMap<TAlbaran, RemolqueDto> propertyMapperRemolque = modelMapper.createTypeMap(TAlbaran.class, RemolqueDto.class);
+		propertyMapperRemolque.addMappings(mapper -> {
 			mapper.map(TAlbaran::getMatricularemolque, RemolqueDto::setMatricula);
 		});
 
-		modelMapper.createTypeMap(TAlbaran.class, TransporteDto.class).addMappings(mapper -> {
+		TypeMap<TAlbaran, TransporteDto> propertyMapper = modelMapper.createTypeMap(TAlbaran.class, TransporteDto.class);
+		propertyMapper.addMappings(mapper -> {
 			mapper.map(TAlbaran::getCodigoEmpresa, TransporteDto::setEmpresa);
 			mapper.map(TAlbaran::getCifTransportista, TransporteDto::setCif);
 			mapper.map(src -> src.getClienteEsCargadorContractual()?" no se que va aquí":" tampoco aquí", TransporteDto::setCargadorContractual);
-			mapper.map(src -> modelMapper.map(src, CamionDto.class), TransporteDto::setCamion);
-			mapper.map(src -> modelMapper.map(src, RemolqueDto.class), TransporteDto::setRemolque);
+			// mapper.map(src -> propertyMapperCamion, TransporteDto::setCamion);
+			// mapper.map(src -> propertyMapperRemolque, TransporteDto::setRemolque);
 		});
 
 		//revisar esto es un listado
@@ -145,12 +179,12 @@ public class AlbaranController implements BaseController<TAlbaran,AlbaranDto> {
 			// mapper.map(TAlbaran::get, AlbaranDto::setProgresoDia);
 			mapper.map(TAlbaran::getPlantasChanged, AlbaranDto::setPlanta);
 			mapper.map(src ->src.getClienteEsCargadorContractual()?1:0, AlbaranDto::setViaCarga);
-			mapper.map(src -> modelMapper.map(src, ClienteDto.class), AlbaranDto::setCliente);
+			// mapper.map(src -> modelMapper.map(src, ClienteDto.class), AlbaranDto::setCliente);
 			mapper.map(TAlbaran::getObra, AlbaranDto::setObra);
 			// mapper.map(TAlbaran::get, AlbaranDto::setDireccion);
 			// mapper.map(TAlbaran::get, AlbaranDto::setCp);
 			// mapper.map(TAlbaran::get, AlbaranDto::setMunicipio);
-			mapper.map(src -> modelMapper.map(src, TransporteDto.class), AlbaranDto::setTransporte);
+			// mapper.map(src -> modelMapper.map(src, TransporteDto.class), AlbaranDto::setTransporte);
 			mapper.map(src -> new MeteorologiaDto(), AlbaranDto::setMeteorologia);
 		});
 	}

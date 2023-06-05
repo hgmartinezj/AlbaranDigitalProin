@@ -9,14 +9,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class HormigonDto {
+public class AdicionesHormigonDto {
 
 	private String tipo;
-	// ficha tecinca referencia
-	private String referencia;
-	//relacion agua cemento
-	private String relacion;
-	private ContenidoDto contenido;
-	private AdicionesHormigonDto adiciones;
+	private Integer cantidad;
 
 }

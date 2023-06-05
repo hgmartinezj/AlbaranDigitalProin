@@ -27,7 +27,9 @@ dependencies {
 					'org.webjars:bootstrap:4.0.0-2',
 					'org.webjars:webjars-locator:0.30',
 					'org.projectlombok:lombok',
-					'org.modelmapper:modelmapper:3.1.0'
+					'org.modelmapper:modelmapper:3.1.0',
+					'org.jeasy:easy-random-core:5.0.0',
+					'org.jeasy:easy-random-randomizers:5.0.0'
 
 	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat',
 					'com.h2database:h2:1.4.192'
