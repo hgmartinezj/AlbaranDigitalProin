@@ -1,13 +1,13 @@
 package com.proin.albaran.controller;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
-import org.jeasy.random.api.Randomizer;
-import org.jeasy.random.randomizers.RegularExpressionRandomizer;
-import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 import org.springframework.stereotype.Controller;
@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import com.proin.albaran.dto.AlbaranDto;
 import com.proin.albaran.dto.CamionDto;
 import com.proin.albaran.dto.ClienteDto;
+import com.proin.albaran.dto.DesgloseContenidoDto;
 import com.proin.albaran.dto.HormigonDto;
 import com.proin.albaran.dto.MeteorologiaDto;
 import com.proin.albaran.dto.RemolqueDto;
@@ -37,6 +38,8 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class AlbaranController implements BaseController<TAlbaran,AlbaranDto> {
 	// private final AlbaranService albaranService;
+
+	private final List<String> catalogoUnidades = TMedida.mapaUnidades.keySet().stream().collect(Collectors.toList());
 	
 	private final ModelMapper modelMapper;
 	@GetMapping("/")
@@ -66,8 +69,8 @@ public class AlbaranController implements BaseController<TAlbaran,AlbaranDto> {
 		albaran.setCliente(EasyRandomUtils.nombreCompletoGenerator().getRandomValue());
 		albaran.setId(23456789L);
 		albaran.setCifTransportista(EasyRandomUtils.cifGenerator().getRandomValue());
-		// albaran.setMatriculaCamion(EasyRandomUtils.matriculaGenerator().getRandomValue());
-		// albaran.setMatricularemolque(EasyRandomUtils.matriculaGenerator().getRandomValue());
+		albaran.setMatriculaCamion(EasyRandomUtils.matriculaGenerator().getRandomValue());
+		albaran.setMatricularemolque(EasyRandomUtils.matriculaGenerator().getRandomValue());
 		albaran.setCodigoEmpresa(1);
 		albaran.setCifTransportista(EasyRandomUtils.cifGenerator().getRandomValue());
 		albaran.setClienteEsCargadorContractual(true);
@@ -127,7 +130,19 @@ public class AlbaranController implements BaseController<TAlbaran,AlbaranDto> {
 		dto.setMeteorologia(modelMapper.map(entity, MeteorologiaDto.class));
 		dto.setHormigon(modelMapper.map(entity, HormigonDto.class));
 		dto.setHormigon(EASY_RANDOM.nextObject(HormigonDto.class));
+		dto.getHormigon().getContenido().setCementos(mapContenidoHormigon(dto.getHormigon().getContenido().getCementos()));
+		dto.getHormigon().getContenido().setAditivos(mapContenidoHormigon(dto.getHormigon().getContenido().getAditivos()));
+		dto.getHormigon().getContenido().setAdiciones(mapContenidoHormigon(dto.getHormigon().getContenido().getAdiciones()));
 		return dto;
+	}
+
+	private List<DesgloseContenidoDto> mapContenidoHormigon(List<DesgloseContenidoDto> degloses){
+		return degloses.stream().map(c-> {
+			c.setFabricante(EasyRandomUtils.companiaGenerator().getRandomValue());
+			c.setModelo(EasyRandomUtils.modeloHormigonGenerator().getRandomValue());
+			c.setCantidad(String.valueOf(EASY_RANDOM.nextObject(Integer.class) + " "+ EasyRandomUtils.catalogoRandomGenerator(catalogoUnidades).getRandomValue()));
+			return c;
+		}).toList();
 	}
 
 	@Override
