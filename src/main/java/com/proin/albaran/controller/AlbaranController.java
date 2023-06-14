@@ -1,10 +1,8 @@
 package com.proin.albaran.controller;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
@@ -142,7 +140,7 @@ public class AlbaranController implements BaseController<TAlbaran,AlbaranDto> {
 			c.setModelo(EasyRandomUtils.modeloHormigonGenerator().getRandomValue());
 			c.setCantidad(String.valueOf(EASY_RANDOM.nextObject(Integer.class) + " "+ EasyRandomUtils.catalogoRandomGenerator(catalogoUnidades).getRandomValue()));
 			return c;
-		}).toList();
+		}).collect(Collectors.toList());
 	}
 
 	@Override
